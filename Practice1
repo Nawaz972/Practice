@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Data;
+using System.Xml.Linq;
 
 namespace Change_Password.Audree
 {
@@ -31,14 +32,21 @@ namespace Change_Password.Audree
                 string ed = Console.ReadLine();
                 Console.WriteLine("Enter Phone Number: ");
                 string pn = Console.ReadLine();
-                string stmt = "insert into Employees(Employee_ID, Name, UserName, Password, Email_ID, Phone_No) values (@id, @nm, @un, @pw, @ed, @pn)";
+                string stmt = "insert into Employees(Employee_ID, Name, UserName, Password, Email_ID, Phone_No) values (@Employee_ID, @Name, @UserName, @Password, @Email_ID, @Phone_No)";
                 SqlCommand cmd = new SqlCommand(stmt, conn);
-                cmd.ExecuteNonQuery();
+                cmd.Parameters.AddWithValue("@Employee_ID", id);
+                cmd.Parameters.AddWithValue("@Name", nm);
+                cmd.Parameters.AddWithValue("@UserName", un);
+                cmd.Parameters.AddWithValue("@Password", pw);
+                cmd.Parameters.AddWithValue("@Email_ID", ed);
+                cmd.Parameters.AddWithValue("@Phone_No", pn);
+                int flag = cmd.ExecuteNonQuery();
+                Console.WriteLine(flag);
                 num--;
             }
-            SqlDataAdapter dr = new SqlDataAdapter("select * from Employees", conn);
-            DataSet ds = new DataSet();
-            dr.Fill(ds);
+            //SqlDataAdapter dr = new SqlDataAdapter("select * from Employees", conn);
+            //DataSet ds = new DataSet();
+            //dr.Fill(ds);
             Console.WriteLine("Success");
             conn.Close();
             Console.ReadLine();
