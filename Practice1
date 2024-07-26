@@ -1,0 +1,47 @@
+using System;
+using System.Data;
+using System.Data.SqlClient;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Data;
+
+namespace Change_Password.Audree
+{
+    internal class Program
+    {
+        static void Main(string[] args)
+        {
+            SqlConnection conn = new SqlConnection("workstation id=NawazDB.mssql.somee.com;packet size=4096;user id=nawaz_2002_SQLLogin_2;pwd=8zsqjoj29k;data source=NawazDB.mssql.somee.com;persist security info=False;initial catalog=NawazDB;TrustServerCertificate=True");
+            conn.Open();
+            Console.WriteLine("Enter the number of rows to be inserted: ");
+            int num = int.Parse(Console.ReadLine());
+            while(num > 0)
+            {
+                Console.WriteLine("Enter Employee ID: ");
+                int id = int.Parse(Console.ReadLine());
+                Console.WriteLine("Enter Employee Name: ");
+                string nm = Console.ReadLine();
+                Console.WriteLine("Enter User Name: ");
+                string un = Console.ReadLine();
+                Console.WriteLine("Enter Password: ");
+                string pw = Console.ReadLine();
+                Console.WriteLine("Enter Email ID: ");
+                string ed = Console.ReadLine();
+                Console.WriteLine("Enter Phone Number: ");
+                string pn = Console.ReadLine();
+                string stmt = "insert into Employees(Employee_ID, Name, UserName, Password, Email_ID, Phone_No) values (@id, @nm, @un, @pw, @ed, @pn)";
+                SqlCommand cmd = new SqlCommand(stmt, conn);
+                cmd.ExecuteNonQuery();
+                num--;
+            }
+            SqlDataAdapter dr = new SqlDataAdapter("select * from Employees", conn);
+            DataSet ds = new DataSet();
+            dr.Fill(ds);
+            Console.WriteLine("Success");
+            conn.Close();
+            Console.ReadLine();
+        }
+    }
+}
