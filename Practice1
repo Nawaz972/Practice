@@ -16,38 +16,72 @@ namespace Change_Password.Audree
         {
             SqlConnection conn = new SqlConnection("workstation id=NawazDB.mssql.somee.com;packet size=4096;user id=nawaz_2002_SQLLogin_2;pwd=8zsqjoj29k;data source=NawazDB.mssql.somee.com;persist security info=False;initial catalog=NawazDB;TrustServerCertificate=True");
             conn.Open();
-            Console.WriteLine("Enter the number of rows to be inserted: ");
-            int num = int.Parse(Console.ReadLine());
-            while(num > 0)
+            //Console.WriteLine("Enter the number of rows to be inserted: ");
+            //int num = int.Parse(Console.ReadLine());
+            //while(num > 0)
+            //{
+            //    Console.WriteLine("Enter Employee ID: ");
+            //    int id = int.Parse(Console.ReadLine());
+            //    Console.WriteLine("Enter Employee Name: ");
+            //    string nm = Console.ReadLine();
+            //    Console.WriteLine("Enter User Name: ");
+            //    string un = Console.ReadLine();
+            //    Console.WriteLine("Enter Password: ");
+            //    string pw = Console.ReadLine();
+            //    Console.WriteLine("Enter Email ID: ");
+            //    string ed = Console.ReadLine();
+            //    Console.WriteLine("Enter Phone Number: ");
+            //    string pn = Console.ReadLine();
+            //    string stmt = "insert into Employees(Employee_ID, Name, UserName, Password, Email_ID, Phone_No) values (@Employee_ID, @Name, @UserName, @Password, @Email_ID, @Phone_No)";
+            //    SqlCommand cmd = new SqlCommand(stmt, conn);
+            //    cmd.Parameters.AddWithValue("@Employee_ID", id);
+            //    cmd.Parameters.AddWithValue("@Name", nm);
+            //    cmd.Parameters.AddWithValue("@UserName", un);
+            //    cmd.Parameters.AddWithValue("@Password", pw);
+            //    cmd.Parameters.AddWithValue("@Email_ID", ed);
+            //    cmd.Parameters.AddWithValue("@Phone_No", pn);
+            //    int flag = cmd.ExecuteNonQuery();
+            //    Console.WriteLine(flag);
+            //    num--;
+            //}
+
+            //Console.WriteLine("Enter the ID of the employee to make changes: ");
+            //int newID = int.Parse(Console.ReadLine());
+            //Console.WriteLine("Enter New Password: ");
+            //string newPassword = Console.ReadLine();
+            //Console.WriteLine("Re-Enter Password: ");
+            //string confirmPassword = Console.ReadLine();
+            //if (newPassword == confirmPassword)
+            //{
+            //    string updateStatement = "UPDATE EMPLOYEES SET Password = @NewPassword WHERE Employee_ID = @NewID";
+            //    SqlCommand cmd = new SqlCommand(updateStatement, conn);
+            //    cmd.Parameters.AddWithValue("@NewPassword", newPassword);
+            //    cmd.Parameters.AddWithValue("@NewID", newID);
+            //    int flag = cmd.ExecuteNonQuery();
+            //    if (flag > 0) Console.WriteLine("Success");
+            //}
+
+
+
+            SqlDataAdapter dr = new SqlDataAdapter("select * from Employees", conn);
+            DataSet ds = new DataSet();
+            dr.Fill(ds);
+            if(ds.Tables.Count > 0)
             {
-                Console.WriteLine("Enter Employee ID: ");
-                int id = int.Parse(Console.ReadLine());
-                Console.WriteLine("Enter Employee Name: ");
-                string nm = Console.ReadLine();
-                Console.WriteLine("Enter User Name: ");
-                string un = Console.ReadLine();
-                Console.WriteLine("Enter Password: ");
-                string pw = Console.ReadLine();
-                Console.WriteLine("Enter Email ID: ");
-                string ed = Console.ReadLine();
-                Console.WriteLine("Enter Phone Number: ");
-                string pn = Console.ReadLine();
-                string stmt = "insert into Employees(Employee_ID, Name, UserName, Password, Email_ID, Phone_No) values (@Employee_ID, @Name, @UserName, @Password, @Email_ID, @Phone_No)";
-                SqlCommand cmd = new SqlCommand(stmt, conn);
-                cmd.Parameters.AddWithValue("@Employee_ID", id);
-                cmd.Parameters.AddWithValue("@Name", nm);
-                cmd.Parameters.AddWithValue("@UserName", un);
-                cmd.Parameters.AddWithValue("@Password", pw);
-                cmd.Parameters.AddWithValue("@Email_ID", ed);
-                cmd.Parameters.AddWithValue("@Phone_No", pn);
-                int flag = cmd.ExecuteNonQuery();
-                Console.WriteLine(flag);
-                num--;
+                DataTable tb = ds.Tables[0];
+                for(int i = 0; i < tb.Rows.Count; i++)
+                {
+                    Console.Write(tb.Row[i][0]);
+                } 
+                    
             }
-            //SqlDataAdapter dr = new SqlDataAdapter("select * from Employees", conn);
-            //DataSet ds = new DataSet();
-            //dr.Fill(ds);
-            Console.WriteLine("Success");
+            else
+            {
+                Console.WriteLine("Table is empty");
+            }
+     
+
+
             conn.Close();
             Console.ReadLine();
         }
