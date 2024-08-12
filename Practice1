@@ -1,87 +1,177 @@
 using System;
-using System.Data;
-using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Data;
-using System.Xml.Linq;
+using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Collections.Specialized;
 
-namespace Change_Password.Audree
+namespace AudreeBank
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            SqlConnection conn = new SqlConnection("workstation id=NawazDB.mssql.somee.com;packet size=4096;user id=nawaz_2002_SQLLogin_2;pwd=8zsqjoj29k;data source=NawazDB.mssql.somee.com;persist security info=False;initial catalog=NawazDB;TrustServerCertificate=True");
+            Console.WriteLine("**************************************");
+            Console.WriteLine("     WELCOME TO AUDREE BANK!");
+            Console.WriteLine("**************************************");
+            Console.WriteLine("\nAre you a new user? (Yes / No)");
+            SqlConnection conn = new SqlConnection("Data Source=(localdb)\\Local;Initial Catalog=Nawaz;Integrated Security=True");
             conn.Open();
-            //Console.WriteLine("Enter the number of rows to be inserted: ");
-            //int num = int.Parse(Console.ReadLine());
-            //while(num > 0)
-            //{
-            //    Console.WriteLine("Enter Employee ID: ");
-            //    int id = int.Parse(Console.ReadLine());
-            //    Console.WriteLine("Enter Employee Name: ");
-            //    string nm = Console.ReadLine();
-            //    Console.WriteLine("Enter User Name: ");
-            //    string un = Console.ReadLine();
-            //    Console.WriteLine("Enter Password: ");
-            //    string pw = Console.ReadLine();
-            //    Console.WriteLine("Enter Email ID: ");
-            //    string ed = Console.ReadLine();
-            //    Console.WriteLine("Enter Phone Number: ");
-            //    string pn = Console.ReadLine();
-            //    string stmt = "insert into Employees(Employee_ID, Name, UserName, Password, Email_ID, Phone_No) values (@Employee_ID, @Name, @UserName, @Password, @Email_ID, @Phone_No)";
-            //    SqlCommand cmd = new SqlCommand(stmt, conn);
-            //    cmd.Parameters.AddWithValue("@Employee_ID", id);
-            //    cmd.Parameters.AddWithValue("@Name", nm);
-            //    cmd.Parameters.AddWithValue("@UserName", un);
-            //    cmd.Parameters.AddWithValue("@Password", pw);
-            //    cmd.Parameters.AddWithValue("@Email_ID", ed);
-            //    cmd.Parameters.AddWithValue("@Phone_No", pn);
-            //    int flag = cmd.ExecuteNonQuery();
-            //    Console.WriteLine(flag);
-            //    num--;
-            //}
-
-            //Console.WriteLine("Enter the ID of the employee to make changes: ");
-            //int newID = int.Parse(Console.ReadLine());
-            //Console.WriteLine("Enter New Password: ");
-            //string newPassword = Console.ReadLine();
-            //Console.WriteLine("Re-Enter Password: ");
-            //string confirmPassword = Console.ReadLine();
-            //if (newPassword == confirmPassword)
-            //{
-            //    string updateStatement = "UPDATE EMPLOYEES SET Password = @NewPassword WHERE Employee_ID = @NewID";
-            //    SqlCommand cmd = new SqlCommand(updateStatement, conn);
-            //    cmd.Parameters.AddWithValue("@NewPassword", newPassword);
-            //    cmd.Parameters.AddWithValue("@NewID", newID);
-            //    int flag = cmd.ExecuteNonQuery();
-            //    if (flag > 0) Console.WriteLine("Success");
-            //}
-
-
-
-            SqlDataAdapter dr = new SqlDataAdapter("select * from Employees", conn);
-            DataSet ds = new DataSet();
-            dr.Fill(ds);
-            if(ds.Tables.Count > 0)
+            string user = Console.ReadLine();
+            int acc;
+            if (user == "Yes" || user == "yes" || user == "Y" || user == "y")
             {
-                DataTable tb = ds.Tables[0];
-                for(int i = 0; i < tb.Rows.Count; i++)
+                Console.WriteLine("\nTo create a new account few details are required: ");
+                Console.WriteLine("\nEnter your name: ");
+                string name = Console.ReadLine();
+                Console.WriteLine("Enter your phone number: ");
+                string phn_no = Console.ReadLine();
+                SqlCommand cmd1 = new SqlCommand("insert into account values(@name, @phn_no, 0)", conn);
+                cmd1.Parameters.AddWithValue("@name", @name);
+                cmd1.Parameters.AddWithValue("@phn_no", @phn_no);
+                int flag = cmd1.ExecuteNonQuery();
+                if (flag > 0)
                 {
-                    Console.Write(tb.Row[i][0]);
-                } 
-                    
+                    Console.WriteLine("Your account has been created successfully!");
+                }
+                else
+                {
+                    Console.WriteLine("Please re-enter the details, due to some teachnical issues account creation has beem failed!");
+                }
+
+                SqlCommand cmd2 = new SqlCommand("select top 1 acc_no from account order by acc_no desc", conn);
+                acc = (int)cmd2.ExecuteScalar();
+                Console.WriteLine("This is your new account number: " + acc);
+
+            }
+            else if (user == "No" || user == "no" || user == "N" || user == "n")
+            {
+                Console.WriteLine("Enter your account number: ");
+                acc = int.Parse(Console.ReadLine());
             }
             else
             {
-                Console.WriteLine("Table is empty");
+                Console.WriteLine("Please enter correct input");
+                acc = 0;
             }
-     
-
-
+            int value = 5;
+            while (value > 0)
+            {
+                Console.WriteLine("\n\nPlease select any one option: \n1: Withdraw Money\n2: Deposit Money\n3: Check Bank Balance\n4: Show Account Details\n0: Exit");
+                value = int.Parse(Console.ReadLine());
+                if(value == 0)
+                {
+                    break;
+                }
+                else if (value == 1)
+                {
+                    Console.WriteLine("Enter the amount to withdraw: ");
+                    int amt = int.Parse(Console.ReadLine());
+                    SqlCommand cmd3 = new SqlCommand("select * from account", conn);
+                    int bal = 0;
+                    using (SqlDataReader dr = cmd3.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            int id = (int)dr["acc_no"];
+                            if (acc == id)
+                            {
+                                bal = (int)dr["balance"];
+                            }
+                        }
+                    }
+                        if(amt > bal)
+                        {
+                            Console.WriteLine("You are poor....");
+                        }
+                        else
+                        {
+                            int new_amt = bal - amt;
+                            SqlCommand cmd = new SqlCommand("update account set balance = @balance where acc_no = @acc_no", conn);
+                            cmd.Parameters.AddWithValue("@balance", @new_amt);
+                            cmd.Parameters.AddWithValue("@acc_no", @acc);
+                            int flag = cmd.ExecuteNonQuery();
+                            if(flag > 0)
+                            {
+                                Console.WriteLine("Succes");
+                            }
+                            else
+                            {
+                                Console.WriteLine("Failed");
+                            }
+                        }
+                }
+                else if(value == 2)
+                {
+                    Console.WriteLine("Enter the amount to deposit: ");
+                    int amt = int.Parse(Console.ReadLine());
+                    int bal = 0;
+                    SqlCommand cmd3 = new SqlCommand("select * from account", conn);
+                    int new_amt = 0;
+                    using (SqlDataReader dr = cmd3.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            int id = (int)dr["acc_no"];
+                            if (acc == id)
+                            {
+                                bal = (int)dr["balance"];
+                            }
+                        }
+                        new_amt = amt + bal;
+                        dr.Close();
+                    }
+                    SqlCommand cmd4 = new SqlCommand("update account set balance = @balance where acc_no = @acc_no", conn);
+                    cmd4.Parameters.AddWithValue("@acc_no", @acc);
+                    cmd4.Parameters.AddWithValue("@balance", @new_amt);
+                    int flag = cmd4.ExecuteNonQuery();
+                    if(flag > 0)
+                    {
+                        Console.WriteLine("Success");
+                    }
+                    else
+                    {
+                        Console.WriteLine("Failed");
+                    }
+                }
+                else if(value == 3)
+                {
+                    SqlCommand cmd5 = new SqlCommand("select * from account", conn);
+                    using (SqlDataReader dr = cmd5.ExecuteReader())
+                    {
+                        while (dr.Read())
+                        {
+                            int id = (int)dr["acc_no"];
+                            if (id == acc)
+                            {
+                                Console.WriteLine("\nThis is your account balance: " + dr["balance"]);
+                            }
+                        }
+                    }
+                }
+                else if(value == 4)
+                {
+                    SqlCommand cmd6 = new SqlCommand("select * from account", conn);
+                    using (SqlDataReader dr = cmd6.ExecuteReader())
+                    {
+                        while(dr.Read())
+                        {
+                            int id = (int)dr["acc_no"];
+                            if(id == acc)
+                            {
+                                Console.WriteLine("\nAccount Number : " + dr["acc_no"] + "\nName : " + dr["name"] + "\nPhone Number : " + dr["phn_no"] + "\nBalance : " + dr["balance"]);
+                            }
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("\nPlease enter correct value...");
+                }    
+            }
+            Console.WriteLine("\n ***** Thank You for using our bank! ***** ");
             conn.Close();
             Console.ReadLine();
         }
