@@ -177,3 +177,16 @@ namespace AudreeBank
         }
     }
 }
+
+
+-- use Nawaz
+
+-- create table account(acc_no int identity(101, 1), name varchar(50), phn_no varchar(50), balance money);
+
+-- select * from account;
+
+-- insert into account values('Nawaz', '9346449106', 0);
+
+--SELECT TOP 1 acc_no FROM account ORDER BY acc_no DESC;
+
+
